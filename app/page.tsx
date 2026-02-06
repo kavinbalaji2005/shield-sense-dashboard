@@ -123,12 +123,11 @@ export default function ShieldSenseDashboard() {
     () => [
       { value: "temperature", label: "Temperature", unit: "°C" },
       { value: "humidity", label: "Humidity", unit: "%" },
-      { value: "smoke", label: "Smoke", unit: "ppm" },
-      { value: "methane", label: "Methane", unit: "ppm" },
-      { value: "carbonMonoxide", label: "Carbon Monoxide", unit: "ppm" },
-      { value: "pressure", label: "Pressure", unit: "" },
+      { value: "smoke_ppm", label: "Smoke", unit: "ppm" },
+      { value: "methane_ppm", label: "Methane", unit: "ppm" },
+      { value: "carbonMonoxide_ppm", label: "Carbon Monoxide", unit: "ppm" },
       { value: "flame", label: "Flame", unit: "" },
-      { value: "alertLevel", label: "Alert Level", unit: "" },
+      { value: "state", label: "Alert Level", unit: "" },
     ],
     [],
   );
@@ -253,14 +252,30 @@ export default function ShieldSenseDashboard() {
       }
 
       const data: TimeseriesResponse = await response.json();
+
+      // Map string states to numeric values for charting
+      const stateToNumber: Record<string, number> = {
+        normal: 0,
+        warning: 1,
+        critical: 2,
+      };
+
       const normalized = (data.points || [])
         .map((point) => {
-          const rawValue =
-            typeof point.value === "number"
-              ? point.value
-              : typeof point[selectedMetric] === "number"
-                ? (point[selectedMetric] as number)
-                : null;
+          let rawValue: number | null = null;
+
+          if (typeof point.value === "number") {
+            rawValue = point.value;
+          } else if (typeof point[selectedMetric] === "number") {
+            rawValue = point[selectedMetric] as number;
+          } else if (
+            typeof point[selectedMetric] === "string" &&
+            selectedMetric === "state"
+          ) {
+            rawValue =
+              stateToNumber[(point[selectedMetric] as string).toLowerCase()] ??
+              null;
+          }
 
           const timestamp =
             typeof point.timestamp === "string" ? point.timestamp : null;
@@ -541,10 +556,21 @@ export default function ShieldSenseDashboard() {
                       tickFormatter={(value) => formatIstTime(String(value))}
                     />
                     <YAxis
-                      domain={["auto", "auto"]}
-                      tickFormatter={(value) =>
-                        `${value}${selectedMetricMeta.unit}`
+                      domain={
+                        selectedMetric === "state" ? [0, 2] : ["auto", "auto"]
                       }
+                      ticks={selectedMetric === "state" ? [0, 1, 2] : undefined}
+                      tickFormatter={(value) => {
+                        if (selectedMetric === "state") {
+                          const labels: Record<number, string> = {
+                            0: "Normal",
+                            1: "Warning",
+                            2: "Critical",
+                          };
+                          return labels[value] ?? String(value);
+                        }
+                        return `${value}${selectedMetricMeta.unit}`;
+                      }}
                     />
                     <ChartTooltip
                       content={
