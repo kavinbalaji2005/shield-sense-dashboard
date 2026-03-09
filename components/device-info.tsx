@@ -84,9 +84,9 @@ export function DeviceInfo({
           <p className="text-sm text-muted-foreground mt-1">{deviceId}</p>
         </div>
         <div
-          className={`px-4 py-2 rounded-md border text-xs font-semibold whitespace-nowrap ${statusColors[status]}`}
+          className={`px-4 py-2 rounded-md border text-xs font-semibold whitespace-nowrap ${statusColors[status ?? "normal"]}`}
         >
-          {status.toUpperCase()}
+          {(status ?? "normal").toUpperCase()}
         </div>
       </div>
 
