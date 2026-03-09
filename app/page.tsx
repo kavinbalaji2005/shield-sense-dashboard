@@ -123,11 +123,11 @@ export default function ShieldSenseDashboard() {
     () => [
       { value: "temperature", label: "Temperature", unit: "°C" },
       { value: "humidity", label: "Humidity", unit: "%" },
-      { value: "smoke_ppm", label: "Smoke", unit: "ppm" },
-      { value: "methane_ppm", label: "Methane", unit: "ppm" },
-      { value: "carbonMonoxide_ppm", label: "Carbon Monoxide", unit: "ppm" },
+      { value: "smoke", label: "Smoke", unit: "ppm" },
+      { value: "methane", label: "Methane", unit: "ppm" },
+      { value: "carbonMonoxide", label: "Carbon Monoxide", unit: "ppm" },
       { value: "flame", label: "Flame", unit: "" },
-      { value: "state", label: "Alert Level", unit: "" },
+      { value: "alertLevel", label: "Alert Level", unit: "" },
     ],
     [],
   );
