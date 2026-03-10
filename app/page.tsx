@@ -123,9 +123,9 @@ export default function ShieldSenseDashboard() {
     () => [
       { value: "temperature", label: "Temperature", unit: "°C" },
       { value: "humidity", label: "Humidity", unit: "%" },
-      { value: "smoke", label: "Smoke", unit: "ppm" },
-      { value: "methane", label: "Methane", unit: "ppm" },
-      { value: "carbonMonoxide", label: "Carbon Monoxide", unit: "ppm" },
+      { value: "smoke_ppm", label: "Smoke", unit: "ppm" },
+      { value: "methane_ppm", label: "Methane", unit: "ppm" },
+      { value: "carbonMonoxide_ppm", label: "Carbon Monoxide", unit: "ppm" },
       { value: "flame", label: "Flame", unit: "" },
       { value: "alertLevel", label: "Alert Level", unit: "" },
     ],
@@ -491,13 +491,13 @@ export default function ShieldSenseDashboard() {
                       id="limit-input"
                       type="number"
                       min={1}
-                      max={500}
+                      max={10000}
                       value={timeseriesLimit}
                       onChange={(event) => {
                         const nextValue = Number(event.target.value);
                         setTimeseriesLimit(
                           Number.isFinite(nextValue) && nextValue > 0
-                            ? Math.min(nextValue, 500)
+                            ? Math.min(nextValue, 10000)
                             : 1,
                         );
                       }}

@@ -63,18 +63,16 @@ function DeviceMarker({
   );
 }
 
+const DEFAULT_LAT = 10.903982;
+const DEFAULT_LON = 76.898391;
+
 export function LocationMap({ lat, lon, deviceName }: LocationMapProps) {
   const latValid = lat !== null && Number.isFinite(lat);
   const lonValid = lon !== null && Number.isFinite(lon);
 
-  if (!latValid || !lonValid) {
-    return (
-      <div className="bg-card border border-border rounded-lg p-6 h-full flex flex-col items-center justify-center">
-        <MapPin className="w-12 h-12 text-muted-foreground mb-3" />
-        <p className="text-sm text-muted-foreground">GPS Unavailable</p>
-      </div>
-    );
-  }
+  const resolvedLat = latValid ? lat! : DEFAULT_LAT;
+  const resolvedLon = lonValid ? lon! : DEFAULT_LON;
+  const isDefault = !latValid || !lonValid;
 
   return (
     <div className="bg-card border border-border rounded-lg p-5 overflow-hidden h-full flex flex-col">
@@ -84,7 +82,7 @@ export function LocationMap({ lat, lon, deviceName }: LocationMapProps) {
           Device Location
         </h3>
         <a
-          href={`https://www.google.com/maps?q=${lat!},${lon!}`}
+          href={`https://www.google.com/maps?q=${resolvedLat},${resolvedLon}`}
           target="_blank"
           rel="noopener noreferrer"
           className="flex items-center gap-1 text-xs text-accent hover:underline"
@@ -98,21 +96,25 @@ export function LocationMap({ lat, lon, deviceName }: LocationMapProps) {
         <APIProvider apiKey={API_KEY}>
           <Map
             style={{ width: "100%", height: "100%" }}
-            defaultCenter={{ lat: lat!, lng: lon! }}
-            center={{ lat: lat!, lng: lon! }}
+            defaultCenter={{ lat: resolvedLat, lng: resolvedLon }}
+            center={{ lat: resolvedLat, lng: resolvedLon }}
             defaultZoom={15}
             mapId="shield-sense-map"
             gestureHandling="cooperative"
             disableDefaultUI={false}
           >
-            <DeviceMarker lat={lat!} lon={lon!} deviceName={deviceName} />
+            <DeviceMarker
+              lat={resolvedLat}
+              lon={resolvedLon}
+              deviceName={deviceName}
+            />
           </Map>
         </APIProvider>
       </div>
 
       <p className="mt-3 text-xs text-muted-foreground font-mono text-center">
-        {Math.abs(lat!).toFixed(5)}°{lat! >= 0 ? "N" : "S"},{" "}
-        {Math.abs(lon!).toFixed(5)}°{lon! >= 0 ? "E" : "W"}
+        {Math.abs(resolvedLat).toFixed(5)}°{resolvedLat >= 0 ? "N" : "S"},{" "}
+        {Math.abs(resolvedLon).toFixed(5)}°{resolvedLon >= 0 ? "E" : "W"}
       </p>
     </div>
   );
